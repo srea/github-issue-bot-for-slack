@@ -6,3 +6,8 @@ You can create new issue by interactive conversation with bot from slack.
 ```
 $ SLACK_BOT_TOKEN=xxx GITHUB_USER=xxx GITHUB_ACCESS_TOKEN=xxx node index.js
 ```
+
+# example
+
+![exapmle1](./docs/example_1.png)
+![exapmle2](./docs/example_2.png)
