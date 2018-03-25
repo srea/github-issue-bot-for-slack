@@ -9,6 +9,7 @@
   "author": "srea",
   "license": "MIT",
   "dependencies": {
-    "botkit": "^0.6.12"
+    "botkit": "^0.6.12",
+    "request-promise": "^4.2.2"
   }
 }
