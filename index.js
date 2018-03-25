@@ -1,47 +1,6 @@
 const Botkit = require("botkit");
-const Request = require("request");
-var rp = require("request-promise");
-
-var createIssue = function(title, body, labels) {
-  var options = {
-    uri: "https://api.github.com/repos/srea/github-issue-bot-for-slack/issues",
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "User-Agent": "Bot"
-    },
-    auth: {
-      user: process.env.GITHUB_USER,
-      password: process.env.GITHUB_ACCESS_TOKEN
-    },
-    body: {
-      title: title,
-      body: body,
-      labels: labels
-    },
-    json: true
-  };
-
-  return rp(options);
-};
-
-const LabelPattern = {
-  iOS: /iOS|iPhone/i,
-  Android: /Android/i,
-  Server: /Server|Web|サーバー|ウェブ/i,
-  Bug: /Bug|不具合|バグ|問題|クラッシュ/i
-};
-
-var obtainRelatedLabels = function(text) {
-  var labels = [];
-  for (label in LabelPattern) {
-    if (text.match(LabelPattern[label])) {
-      console.log(LabelPattern[label]);
-      labels.push(label);
-    }
-  }
-  return labels;
-};
+const createGithubIssue = require("./github-issues");
+const obtainRelatedLabels = require("./related-labels");
 
 if (!process.env.SLACK_BOT_TOKEN) {
   console.log("Error: Specify token in environment");
@@ -75,7 +34,7 @@ controller.hears("(.*)", ["direct_mention", "mention"], function(bot, message) {
     convo.ask("コメントを記入してください", function(response, convo) {
       var body = response.text;
       var labels = obtainRelatedLabels(title + body);
-      createIssue(title, body, labels)
+      createGithubIssue(title, body, labels)
         .then(function(response) {
           convo.say("作成しました\n" + response.html_url);
           convo.next();
