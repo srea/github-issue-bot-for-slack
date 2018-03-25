@@ -1,7 +1,7 @@
 var rp = require("request-promise");
 var createGithubIssue = function(title, body, labels) {
   var options = {
-    uri: "https://api.github.com/repos/srea/github-issue-bot-for-slack/issues",
+    uri: "https://api.github.com/repos/" + process.env.GITHUB_REPO + "/issues",
     method: "POST",
     headers: {
       "Content-Type": "application/json",
