@@ -9,5 +9,5 @@ $ SLACK_BOT_TOKEN=xxx GITHUB_USER=xxx GITHUB_REPO=xxx/xxx GITHUB_ACCESS_TOKEN=xx
 
 # example
 
-![exapmle1](./docs/example_1.png)
-![exapmle2](./docs/example_2.png)
+![exapmle1](./docs/example_1.png =250x)
+![exapmle2](./docs/example_2.png =250x)
