@@ -2,7 +2,7 @@ var relatedLabels = {
   iOS: /iOS|iPhone/i,
   Android: /Android/i,
   Server: /Server|Web|サーバー|ウェブ/i,
-  Bug: /Bug|不具合|バグ|問題|クラッシュ/i
+  バグ: /Bug|不具合|バグ|問題|クラッシュ/i
 };
 
 var obtainRelatedLabels = function(text) {

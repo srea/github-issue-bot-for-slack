@@ -7,6 +7,13 @@ if (!process.env.SLACK_BOT_TOKEN) {
   process.exit(1);
 }
 
+var obtainTemplate = function(labels) {
+  if (labels.indexOf("バグ") != -1) {
+    return "# 説明\n\n# 再現手順\n\n# スクリーンショット\n\n## プラットフォーム\n\n- [ ] iOS\n- [ ] Android\n- [ ] Server\n\n## 環境\n\n- [ ] Production\n- [ ] Staging\n- [ ] Development\n\n## その他\n\n- App Version: v\n\n(* 個人情報は載せないようにご注意下さい)";
+  }
+  return ""
+};
+
 const controller = Botkit.slackbot({
   debug: false
 });
@@ -21,7 +28,7 @@ controller
     }
   });
 
-controller.hears(new RegExp("^issue作って(.*)", "i"), ["ambient"], function(
+controller.hears(new RegExp("^issue(.*)", "i"), ["ambient"], function(
   bot,
   message
 ) {
@@ -54,33 +61,31 @@ controller.hears(new RegExp("^issue作って(.*)", "i"), ["ambient"], function(
 
 controller.hears("(.*)", ["direct_mention", "mention"], function(bot, message) {
   var from;
+
+  bot.api.reactions.add(
+    {
+      timestamp: message.ts,
+      channel: message.channel,
+      name: "eyes"
+    },
+    function(error, _) {
+      if (error) {
+        bot.botkit.log("Failed to add emoji reaction:", error);
+      }
+    }
+  );
+
   bot.api.users.info({ user: message.user }, function(err, info) {
     from = info.user.name;
+    var title = message.text;
+    var labels = obtainRelatedLabels(title);
+    var body = "slack @" + from + " より\n\n" + obtainTemplate(labels);
+    createGithubIssue(title, body, labels)
+      .then(function(response) {
+        bot.reply(message, "詳細を記入してください :bow: \n" + response.html_url);
+      })
+      .catch(function(error) {
+        bot.reply(message, "error :cry:");
+      });
   });
-
-  var askTitle = function(err, convo) {
-    convo.ask("タイトルを記入してください", function(response, convo) {
-      askDescription(response, convo);
-      convo.next();
-    });
-  };
-  var askDescription = function(response, convo) {
-    var title = response.text;
-
-    convo.ask("コメントを記入してください", function(response, convo) {
-      var body = "@" + from + "より\n\n" + response.text;
-      var labels = obtainRelatedLabels(title + body);
-      createGithubIssue(title, body, labels)
-        .then(function(response) {
-          convo.say("作成しました\n" + response.html_url);
-          convo.next();
-        })
-        .catch(function(error) {
-          convo.say("error");
-          convo.next();
-        });
-    });
-  };
-  bot.startConversation(message, askTitle);
-  console.log(message.user);
 });
