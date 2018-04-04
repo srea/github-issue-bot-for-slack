@@ -8,9 +8,9 @@ if (!process.env.SLACK_BOT_TOKEN) {
   process.exit(1);
 }
 
-var generatePrefixText = function (from) {
+var generatePrefixText = function (user) {
 
-  return "# 起票者\n\n@" + from + " (slack)\n\n";
+  return "### 起票者\n\n![icon](" + user.profile.image_72 + ")" + user.real_name + "\n\n";
 };
 
 const controller = Botkit.slackbot({
@@ -45,10 +45,9 @@ controller.hears("(.*)", ["direct_mention", "mention"], function (bot, message) 
   bot.api.users.info({
     user: message.user
   }, function (err, info) {
-    from = info.user.name;
     var title = message.text;
     var labels = obtainRelatedLabels(title);
-    var prefixText = generatePrefixText(from);
+    var prefixText = generatePrefixText(info.user);
     fetchGithubContent()
       .then(function (body) {
         body = prefixText + body;
