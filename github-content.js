@@ -16,6 +16,6 @@ var fetchGithubContent = function () {
             password: process.env.GITHUB_ACCESS_TOKEN
         },
     };
-    return request(options);
+    return rp(options);
 };
 module.exports = fetchGithubContent;
