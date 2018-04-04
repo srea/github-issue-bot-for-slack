@@ -11,12 +11,11 @@ var createGithubIssue = function(title, body, labels) {
       user: process.env.GITHUB_USER,
       password: process.env.GITHUB_ACCESS_TOKEN
     },
-    body: {
+    json: {
       title: title,
       body: body,
       labels: labels
-    },
-    json: true
+    }
   };
 
   return rp(options);
