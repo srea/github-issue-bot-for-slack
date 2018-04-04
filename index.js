@@ -10,7 +10,7 @@ if (!process.env.SLACK_BOT_TOKEN) {
 
 var generatePrefixText = function (user) {
 
-  return "### 起票者\n\n![icon](" + user.profile.image_72 + ")" + user.real_name + "\n\n";
+  return "### 起票者\n\n" + user.real_name + "\n\n";
 };
 
 const controller = Botkit.slackbot({
