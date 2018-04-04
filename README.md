@@ -17,13 +17,4 @@ $ npm install -g forever
 $ SLACK_BOT_TOKEN=xxx GITHUB_USER=xxx GITHUB_REPO=xxx/xxx GITHUB_ACCESS_TOKEN=xxx forever start index.js
 ```
 
-
-# example
-
-## pattern 1
-
-<img src="./docs/example_1.png" width="400">
-
-## pattern 2
-
-<img src="./docs/example_2.png" width="400">
+# screenshot
