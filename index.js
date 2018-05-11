@@ -58,39 +58,10 @@ controller.hears("(.*)", ["direct_mention", "mention"], function (bot, message) 
         return createGithubIssue(title, body, labels);
       })
       .then(function (response) {
-        bot.reply(message, {
-          "text" : "<@" + message.user + "> :writing_hand: " + response.html_url,
-          "attachments":[{
-            "fallback": "fallback",
-            "callback_id": "wrote_issue",
-            "attachment_type": "default",
-            "actions":[
-              {
-                "name":"done",
-                "text":"Done",
-                "type":"button",
-                "value": response.html_url,
-              }
-            ],
-          }],
-        });
+        bot.reply(message, "<@" + message.user + "> :writing_hand: " + response.html_url);
       })
       .catch(function (error) {
         bot.reply(message, "error :cry:");
       });
   });
-});
-
-controller.on('interactive_message_callback', function(bot, message) {
-
-  if (message.callback_id == "wrote_issue") {
-
-    const name = message.actions[0].name;
-    const value = message.actions[0].value;
-
-    bot.replyInteractive(message, {
-      "text": ":+1::skin-tone-2:"
-    });
-  }
-
 });
