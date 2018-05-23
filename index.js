@@ -14,7 +14,8 @@ var generatePrefixText = function (user) {
 };
 
 const controller = Botkit.slackbot({
-  debug: false
+  debug: false,
+  retry: true
 });
 
 controller
@@ -27,7 +28,7 @@ controller
     }
   });
 
-controller.hears("ping", ["direct_mention", "mention"], function (bot, message) {
+controller.hears("ping", ["direct_message", "direct_mention", "mention"], function (bot, message) {
   bot.reply(message,':+1:');
 });
 
