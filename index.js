@@ -1,5 +1,6 @@
 const Botkit = require("botkit");
 const createGithubIssue = require("./github-issues");
+const fetchGithubContent = require("./github-content");
 const obtainRelatedLabels = require("./related-labels");
 
 if (!process.env.SLACK_BOT_TOKEN) {
@@ -7,80 +8,61 @@ if (!process.env.SLACK_BOT_TOKEN) {
   process.exit(1);
 }
 
+var generatePrefixText = function (user) {
+
+  return "### 起票者\n\n" + user.real_name + "\n\n";
+};
+
 const controller = Botkit.slackbot({
-  debug: false
+  debug: false,
+  retry: true
 });
 
 controller
   .spawn({
     token: process.env.SLACK_BOT_TOKEN
   })
-  .startRTM(function(err) {
+  .startRTM(function (err) {
     if (err) {
       throw new Error(err);
     }
   });
 
-controller.hears(new RegExp("^issue作って(.*)", "i"), ["ambient"], function(
-  bot,
-  message
-) {
-  bot.api.reactions.add(
-    {
+controller.hears("ping", ["direct_message", "direct_mention", "mention"], function (bot, message) {
+  bot.reply(message,':+1:');
+});
+
+controller.hears("(.*)", ["direct_mention", "mention"], function (bot, message) {
+  var from;
+
+  bot.api.reactions.add({
       timestamp: message.ts,
       channel: message.channel,
       name: "eyes"
     },
-    function(error, _) {
+    function (error, _) {
       if (error) {
         bot.botkit.log("Failed to add emoji reaction:", error);
       }
     }
   );
-  var splitText = message.text.split(/\r\n|\r|\n/);
-  var title = splitText[1];
-  splitText.shift();
-  splitText.shift();
-  var body = splitText.join("\n");
-  var labels = obtainRelatedLabels(title + body);
-  createGithubIssue(title, body, labels)
-    .then(function(response) {
-      bot.reply(message, "作成しました\n" + response.html_url);
-    })
-    .catch(function(error) {
-      convo.say("error");
-    });
-});
 
-controller.hears("(.*)", ["direct_mention", "mention"], function(bot, message) {
-  var from;
-  bot.api.users.info({ user: message.user }, function(err, info) {
-    from = info.user.name;
+  bot.api.users.info({
+    user: message.user
+  }, function (err, info) {
+    var title = message.text;
+    var labels = obtainRelatedLabels(title);
+    var prefixText = generatePrefixText(info.user);
+    fetchGithubContent()
+      .then(function (body) {
+        body = prefixText + body;
+        return createGithubIssue(title, body, labels);
+      })
+      .then(function (response) {
+        bot.reply(message, "<@" + message.user + "> :writing_hand: " + response.html_url);
+      })
+      .catch(function (error) {
+        bot.reply(message, "error :cry:");
+      });
   });
-
-  var askTitle = function(err, convo) {
-    convo.ask("タイトルを記入してください", function(response, convo) {
-      askDescription(response, convo);
-      convo.next();
-    });
-  };
-  var askDescription = function(response, convo) {
-    var title = response.text;
-
-    convo.ask("コメントを記入してください", function(response, convo) {
-      var body = "@" + from + "より\n\n" + response.text;
-      var labels = obtainRelatedLabels(title + body);
-      createGithubIssue(title, body, labels)
-        .then(function(response) {
-          convo.say("作成しました\n" + response.html_url);
-          convo.next();
-        })
-        .catch(function(error) {
-          convo.say("error");
-          convo.next();
-        });
-    });
-  };
-  bot.startConversation(message, askTitle);
-  console.log(message.user);
 });

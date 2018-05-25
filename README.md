@@ -4,15 +4,17 @@
 You can create new issue by interactive conversation with bot from slack.
 
 ```
+$ git clone git@github.com:srea/github-issue-bot-for-slack.git
+$ cd github-issue-bot-for-slack
+$ npm install
 $ SLACK_BOT_TOKEN=xxx GITHUB_USER=xxx GITHUB_REPO=xxx/xxx GITHUB_ACCESS_TOKEN=xxx node index.js
 ```
 
-# example
+use forever
 
-## pattern 1
+```
+$ npm install -g forever
+$ SLACK_BOT_TOKEN=xxx GITHUB_USER=xxx GITHUB_REPO=xxx/xxx GITHUB_ACCESS_TOKEN=xxx forever start index.js
+```
 
-<img src="./docs/example_1.png" width="400">
-
-## pattern 2
-
-<img src="./docs/example_2.png" width="400">
+# screenshot

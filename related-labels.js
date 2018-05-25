@@ -1,14 +1,13 @@
 var relatedLabels = {
-  iOS: /iOS|iPhone/i,
-  Android: /Android/i,
-  Server: /Server|Web|サーバー|ウェブ/i,
-  Bug: /Bug|不具合|バグ|問題|クラッシュ/i
+  "バグ: iOS": 'iOS|iPhone',
+  "バグ: Android": 'Android',
+  "バグ: Server": 'Server|Web|サーバー|ウェブ|API'
 };
 
-var obtainRelatedLabels = function(text) {
-  var labels = [];
+var obtainRelatedLabels = function (text) {
+  var labels = ["エスカレーション", "バグ"];
   for (label in relatedLabels) {
-    if (text.match(relatedLabels[label])) {
+    if (text.match(new RegExp(relatedLabels[label], 'i'))) {
       labels.push(label);
     }
   }

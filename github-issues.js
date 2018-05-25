@@ -1,5 +1,5 @@
 var rp = require("request-promise");
-var createGithubIssue = function(title, body, labels) {
+var createGithubIssue = function (title, body, labels) {
   var options = {
     uri: "https://api.github.com/repos/" + process.env.GITHUB_REPO + "/issues",
     method: "POST",
@@ -11,12 +11,11 @@ var createGithubIssue = function(title, body, labels) {
       user: process.env.GITHUB_USER,
       password: process.env.GITHUB_ACCESS_TOKEN
     },
-    body: {
+    json: {
       title: title,
       body: body,
       labels: labels
-    },
-    json: true
+    }
   };
 
   return rp(options);
